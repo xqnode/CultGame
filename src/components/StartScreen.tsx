@@ -9,6 +9,7 @@ interface Props {
 
 export function StartScreen({ onStart, soundOn, onToggleSound }: Props) {
   const [name, setName] = useState('')
+  const [readOnly, setReadOnly] = useState(true)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -41,18 +42,27 @@ export function StartScreen({ onStart, soundOn, onToggleSound }: Props) {
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="w-full max-w-sm space-y-6">
+      <form autoComplete="off" onSubmit={handleSubmit} className="w-full max-w-sm space-y-6">
         <div>
-          <label htmlFor="name" className="block text-sm text-[var(--color-mist)] mb-2 tracking-wider">
+          <label htmlFor="dao-hao" className="block text-sm text-[var(--color-mist)] mb-2 tracking-wider">
             道号
           </label>
           <input
-            id="name"
+            id="dao-hao"
+            name="dao-hao"
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
+            onFocus={() => setReadOnly(false)}
+            readOnly={readOnly}
             placeholder="请输入你的名字"
             maxLength={12}
+            autoComplete="off"
+            autoCorrect="off"
+            autoCapitalize="off"
+            spellCheck={false}
+            data-lpignore="true"
+            data-1p-ignore
             className="w-full px-4 py-3 bg-[rgba(232,220,200,0.06)] border border-[var(--color-jade)] rounded-sm
               text-[var(--color-parchment)] placeholder:text-[var(--color-mist)]/50
               focus:outline-none focus:border-[var(--color-gold)] focus:ring-1 focus:ring-[var(--color-gold)]/30
