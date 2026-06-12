@@ -1,28 +1,50 @@
+import { useEffect, useRef } from 'react'
+import { highlightLogEntry, LOG_TONE_CLASS } from './logHighlight'
+
 interface Props {
   logs: string[]
 }
 
 export function LogPanel({ logs }: Props) {
-  const recent = logs.slice(-12)
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const recentFirst = [...logs].reverse()
+
+  useEffect(() => {
+    const el = scrollRef.current
+    if (!el) return
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    el.scrollTo({ top: 0, behavior: prefersReduced ? 'auto' : 'smooth' })
+  }, [logs.length])
 
   return (
-    <aside className="h-full flex flex-col">
+    <aside className="h-full flex flex-col min-h-0">
       <h4
         className="text-lg text-[var(--color-gold-dim)] mb-4 shrink-0"
         style={{ fontFamily: 'var(--font-display)' }}
       >
         修仙日志
       </h4>
-      <div className="flex-1 overflow-y-auto space-y-2 pr-1 max-h-[50vh] lg:max-h-none">
-        {recent.length === 0 ? (
+      <div
+        ref={scrollRef}
+        className="log-scroll flex-1 min-h-0 overflow-y-auto space-y-2 pr-1 max-h-[40vh] lg:max-h-[calc(100vh-11rem)]"
+      >
+        {logs.length === 0 ? (
           <p className="text-sm text-[var(--color-mist)]/50">尚无记录……</p>
         ) : (
-          recent.map((entry, i) => (
+          recentFirst.map((entry, i) => (
             <p
-              key={`${i}-${entry.slice(0, 20)}`}
-              className="text-sm text-[var(--color-parchment-dim)] leading-relaxed border-l-2 border-[var(--color-jade)]/30 pl-3 animate-fade-up"
+              key={`${logs.length - 1 - i}-${entry.slice(0, 20)}`}
+              className="text-sm text-[var(--color-parchment-dim)] leading-relaxed border-l-2 border-[var(--color-jade)]/30 pl-3"
             >
-              {entry}
+              {highlightLogEntry(entry).map((segment, j) =>
+                segment.tone ? (
+                  <span key={j} className={LOG_TONE_CLASS[segment.tone]}>
+                    {segment.text}
+                  </span>
+                ) : (
+                  <span key={j}>{segment.text}</span>
+                ),
+              )}
             </p>
           ))
         )}

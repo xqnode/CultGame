@@ -1,6 +1,9 @@
 import type { GameEvent } from '../types/game'
+import { EXTRA_EVENTS } from './eventsExtra'
+import { ROMANCE_EVENTS } from './eventsRomance'
+import { SYSTEM_EVENTS } from './eventsSystems'
 
-export const EVENTS: GameEvent[] = [
+const CORE_EVENTS: GameEvent[] = [
   {
     id: 'enter_sect',
     title: '拜入宗门',
@@ -48,7 +51,7 @@ export const EVENTS: GameEvent[] = [
         effects: [
           { type: 'flag', key: 'refused_all_sects', value: true },
           { type: 'stat', key: 'luck', value: 5 },
-          { type: 'cultivation', value: 5 },
+          { type: 'cultivation', value: 12 },
           { type: 'log', text: '16岁：拒绝宗门，踏上散修之路。' },
         ],
       },
@@ -113,8 +116,10 @@ export const EVENTS: GameEvent[] = [
     title: '集市捡漏',
     description:
       '坊市角落，一落魄修士摆摊出售"古物"。多数皆是假货，但你目光一扫，其中似有一件灵器微光一闪而逝。',
-    weight: 12,
+    rarity: 'rare',
+    weight: 9,
     years: 1,
+    once: true,
     choices: [
       {
         id: 'buy',
@@ -150,6 +155,7 @@ export const EVENTS: GameEvent[] = [
             chance: 0.25,
             successEffects: [
               { type: 'spiritStones', value: -10 },
+              { type: 'spiritStones', value: 25 },
               { type: 'cultivation', value: 5 },
             ],
             failEffects: [
@@ -176,6 +182,8 @@ export const EVENTS: GameEvent[] = [
       '同门师兄邀你共探秘境，言语殷勤。你察觉他目光闪烁，显然别有用心。',
     weight: 10,
     years: 1,
+    once: true,
+    storyGroup: 'sect_intrigue',
     conditions: [{ type: 'flag', key: 'loyal_to_sect', value: true }],
     choices: [
       {
@@ -238,16 +246,18 @@ export const EVENTS: GameEvent[] = [
     title: '妖兽袭击',
     description:
       '夜行山林，腥风扑面。一头二阶妖狼从暗处扑出，双目猩红，利爪如刀。',
-    weight: 14,
+    weight: 10,
     years: 1,
+    once: true,
     choices: [
       {
         id: 'fight',
         text: '正面迎战',
+        hint: '约四成胜算 · 败则重伤',
         outcomes: [
           {
-            chance: 0.45,
-            luckBonus: 0.003,
+            chance: 0.38,
+            luckBonus: 0.002,
             successEffects: [
               { type: 'cultivation', value: 18 },
               { type: 'spiritStones', value: 20 },
@@ -255,11 +265,12 @@ export const EVENTS: GameEvent[] = [
             ],
             failEffects: [
               { type: 'lifespan', value: -12 },
-              { type: 'flag', key: 'died_in_tribulation', value: true },
+              { type: 'stat', key: 'demonHeart', value: 10 },
+              { type: 'cultivation', value: -8 },
             ],
             narrative: {
-              success: '斩杀妖狼，取其妖丹，体魄更为坚韧。',
-              fail: '不敌妖狼，重伤濒死，道基大损。',
+              success: '险胜妖狼，取其妖丹，体魄更为坚韧。',
+              fail: '不敌妖狼，重伤逃遁，寿元受损，心魔暗生。',
             },
           },
         ],
@@ -267,6 +278,7 @@ export const EVENTS: GameEvent[] = [
       {
         id: 'flee',
         text: '施展遁术逃跑',
+        hint: '较安全 · 收益低',
         outcomes: [
           {
             chance: 0.7,
@@ -285,22 +297,24 @@ export const EVENTS: GameEvent[] = [
       {
         id: 'tame',
         text: '尝试以神识驯服',
+        hint: '需悟性45 · 高风险高回报',
         requirements: [{ type: 'stat', key: 'comprehension', min: 45 }],
         outcomes: [
           {
             chance: 0.2,
             successEffects: [
-              { type: 'flag', key: 'has_spirit_beast', value: true },
+              { type: 'spiritBeast', name: '妖狼', tier: 1 },
               { type: 'stat', key: 'luck', value: 8 },
               { type: 'cultivation', value: 12 },
             ],
             failEffects: [
-              { type: 'lifespan', value: -20 },
-              { type: 'flag', key: 'died_in_tribulation', value: true },
+              { type: 'lifespan', value: -12 },
+              { type: 'stat', key: 'demonHeart', value: 15 },
+              { type: 'cultivation', value: -8 },
             ],
             narrative: {
               success: '神识贯通，妖狼臣服，结为灵宠。',
-              fail: '神识遭反噬，元神受创，性命堪忧。',
+              fail: '神识遭反噬，元神受创，重伤退走。',
             },
           },
         ],
@@ -312,13 +326,16 @@ export const EVENTS: GameEvent[] = [
     title: '长老讲道',
     description:
       '宗门长老开坛讲道，百余名弟子端坐听讲。天地灵气随道音流转，沁人心脾。',
-    weight: 12,
+    weight: 9,
     years: 2,
+    maxTimes: 2,
+    cooldown: 4,
     conditions: [{ type: 'flag', key: 'loyal_to_sect', value: true }],
     choices: [
       {
         id: 'attend',
         text: '全神贯注，认真听讲',
+        narrative: '道音入耳，你凝神静听，灵气随讲道流转周身，修为大进，悟性亦有所增。',
         effects: [
           { type: 'cultivation', value: 20 },
           { type: 'stat', key: 'comprehension', value: 5 },
@@ -328,6 +345,7 @@ export const EVENTS: GameEvent[] = [
         id: 'ask',
         text: '提问修炼疑惑',
         requirements: [{ type: 'stat', key: 'comprehension', min: 30 }],
+        narrative: '你起身提问，长老欣然解惑，令你茅塞顿开。众弟子侧目，长老更将你记为宗门翘楚。',
         effects: [
           { type: 'cultivation', value: 25 },
           { type: 'stat', key: 'comprehension', value: 8 },
@@ -337,6 +355,7 @@ export const EVENTS: GameEvent[] = [
       {
         id: 'sleep',
         text: '昏昏欲睡，敷衍了事',
+        narrative: '你昏昏欲睡，长老蹙眉不语，同门窃笑。虽略有收获，因果却微损。',
         effects: [
           { type: 'cultivation', value: 5 },
           { type: 'stat', key: 'karma', value: -5 },
@@ -347,10 +366,12 @@ export const EVENTS: GameEvent[] = [
   {
     id: 'herb_gather',
     title: '灵草采集',
+    rarity: 'rare',
     description:
       '药园深处，百年灵草散发清香。然而附近有毒蛇盘踞，采摘需格外小心。',
-    weight: 11,
+    weight: 8,
     years: 1,
+    once: true,
     choices: [
       {
         id: 'careful',
@@ -430,10 +451,24 @@ export const EVENTS: GameEvent[] = [
       {
         id: 'accept',
         text: '倾听魔音，试探魔功',
-        effects: [
-          { type: 'stat', key: 'demonHeart', value: 25 },
-          { type: 'flag', key: 'accepted_demon_path', value: true },
-          { type: 'cultivation', value: 30 },
+        hint: '约五成失控 · 修为涨或心魔反噬',
+        outcomes: [
+          {
+            chance: 0.5,
+            successEffects: [
+              { type: 'cultivation', value: 30 },
+              { type: 'stat', key: 'demonHeart', value: 15 },
+            ],
+            failEffects: [
+              { type: 'flag', key: 'accepted_demon_path', value: true },
+              { type: 'stat', key: 'demonHeart', value: 30 },
+              { type: 'cultivation', value: 10 },
+            ],
+            narrative: {
+              success: '你克制魔音，小有顿悟，修为进益。',
+              fail: '魔音反噬，你堕入魔道边缘，心魔大起。',
+            },
+          },
         ],
       },
       {
@@ -464,6 +499,7 @@ export const EVENTS: GameEvent[] = [
       {
         id: 'hard',
         text: '以肉身硬抗天雷',
+        hint: '约四成得手 · 败则重伤',
         outcomes: [
           {
             chance: 0.4,
@@ -473,12 +509,14 @@ export const EVENTS: GameEvent[] = [
               { type: 'stat', key: 'rootBone', value: 10 },
             ],
             failEffects: [
-              { type: 'flag', key: 'died_in_tribulation', value: true },
               { type: 'lifespan', value: -30 },
+              { type: 'cultivation', value: -35 },
+              { type: 'stat', key: 'demonHeart', value: 12 },
+              { type: 'flag', key: 'grievously_wounded', value: true },
             ],
             narrative: {
               success: '雷劫过后，筑基成功，肉身更为强韧。',
-              fail: '天雷贯体，道基崩碎，性命垂危。',
+              fail: '天雷贯体，道基受损，你重伤脱身，筑基未成。',
             },
           },
         ],
@@ -674,10 +712,25 @@ export const EVENTS: GameEvent[] = [
       {
         id: 'loot',
         text: '只取遗物，不拜传承',
-        effects: [
-          { type: 'spiritStones', value: 100 },
-          { type: 'stat', key: 'karma', value: -15 },
-          { type: 'cultivation', value: 10 },
+        hint: '约六成得手 · 败则触怒禁制',
+        outcomes: [
+          {
+            chance: 0.55,
+            successEffects: [
+              { type: 'spiritStones', value: 100 },
+              { type: 'stat', key: 'karma', value: -15 },
+              { type: 'cultivation', value: 10 },
+            ],
+            failEffects: [
+              { type: 'stat', key: 'karma', value: -25 },
+              { type: 'lifespan', value: -10 },
+              { type: 'stat', key: 'demonHeart', value: 12 },
+            ],
+            narrative: {
+              success: '你悄然取走遗物，迅速离去。',
+              fail: '禁制反扑，你受伤逃遁，因果大损。',
+            },
+          },
         ],
       },
     ],
@@ -686,13 +739,20 @@ export const EVENTS: GameEvent[] = [
     id: 'dao_companion',
     title: '道侣结缘',
     description:
-      '一位女修误入秘境，与你相遇。她资质不俗，提议结为道侣，共修大道。',
-    weight: 8,
+      '秘境深处，一名紫衣女修与你狭路相逢。她自称来自南海，资质不俗，提议结为道侣，共参大道。',
+    weight: 10,
     years: 2,
+    once: true,
+    conditions: [
+      { type: 'realm', min: 'foundation' },
+      { type: 'flag', key: 'has_companion', value: false },
+      { type: 'flag', key: 'met_su_qing', value: false },
+    ],
     choices: [
       {
         id: 'accept',
         text: '结为道侣，双修共进',
+        narrative: '你与紫衣女修对天盟誓，结为道侣。二人功法互补，修为一日千里。',
         effects: [
           { type: 'flag', key: 'has_companion', value: true },
           { type: 'cultivation', value: 25 },
@@ -702,6 +762,7 @@ export const EVENTS: GameEvent[] = [
       {
         id: 'decline',
         text: '婉言谢绝，专心修道',
+        narrative: '你以礼相送，女修叹你道心坚定，留下一枚玉佩后飘然离去。',
         effects: [
           { type: 'cultivation', value: 15 },
           { type: 'stat', key: 'comprehension', value: 5 },
@@ -710,6 +771,7 @@ export const EVENTS: GameEvent[] = [
       {
         id: 'betray',
         text: '趁其不备，夺其机缘',
+        narrative: '你暗算女修，夺其储物袋。修为虽涨，因果大损，心魔暗生。',
         effects: [
           { type: 'spiritStones', value: 80 },
           { type: 'stat', key: 'karma', value: -30 },
@@ -731,6 +793,7 @@ export const EVENTS: GameEvent[] = [
       {
         id: 'explore',
         text: '深入秘境核心',
+        hint: '约四成得手 · 败则重伤',
         outcomes: [
           {
             chance: 0.4,
@@ -742,11 +805,13 @@ export const EVENTS: GameEvent[] = [
             ],
             failEffects: [
               { type: 'lifespan', value: -20 },
-              { type: 'flag', key: 'died_in_tribulation', value: true },
+              { type: 'cultivation', value: -25 },
+              { type: 'stat', key: 'demonHeart', value: 10 },
+              { type: 'flag', key: 'grievously_wounded', value: true },
             ],
             narrative: {
               success: '核心区域获重宝，修为大进。',
-              fail: '遭遇空间裂缝，重伤濒死。',
+              fail: '遭遇空间裂缝，你被震出秘境，重伤濒死却保住一命。',
             },
           },
         ],
@@ -791,6 +856,8 @@ export const EVENTS: GameEvent[] = [
             luckBonus: 0.004,
             successEffects: [
               { type: 'flag', key: 'mastered_alchemy', value: true },
+              { type: 'flag', key: 'golden_pill_refined', value: true },
+              { type: 'alchemyTier', value: 3 },
               { type: 'cultivation', value: 30 },
               { type: 'stat', key: 'comprehension', value: 10 },
               { type: 'lifespan', value: 30 },
@@ -832,6 +899,7 @@ export const EVENTS: GameEvent[] = [
       {
         id: 'endure',
         text: '以身渡劫',
+        hint: '约三成得手 · 败则身死',
         outcomes: [
           {
             chance: 0.35,
@@ -878,6 +946,7 @@ export const EVENTS: GameEvent[] = [
       '你感到体内生机流逝，须发渐白。若不寻得续命之法，大限将至。',
     weight: 12,
     years: 2,
+    once: true,
     conditions: [{ type: 'lifespan_remaining', max: 15 }],
     choices: [
       {
@@ -924,9 +993,12 @@ export const EVENTS: GameEvent[] = [
       {
         id: 'accept',
         text: '坦然面对，整理遗训',
+        hint: '因果清正 · 本回合后寿尽坐化',
+        narrative: '你将毕生感悟写成遗训，传予后辈，随后安然坐化。',
         effects: [
           { type: 'stat', key: 'karma', value: 10 },
           { type: 'stat', key: 'demonHeart', value: -15 },
+          { type: 'endLife' },
         ],
       },
     ],
@@ -1022,4 +1094,11 @@ export const EVENTS: GameEvent[] = [
       },
     ],
   },
+]
+
+export const EVENTS: GameEvent[] = [
+  ...CORE_EVENTS,
+  ...ROMANCE_EVENTS,
+  ...EXTRA_EVENTS,
+  ...SYSTEM_EVENTS,
 ]

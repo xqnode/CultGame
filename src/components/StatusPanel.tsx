@@ -1,4 +1,7 @@
+import { CultivationSystemsPanel } from './CultivationSystemsPanel'
+import { formatArtifactName } from '../data/artifacts'
 import { getRealmName } from '../engine/gameEngine'
+import { getRouteTags, getWarnings } from '../engine/routeInfo'
 import type { PlayerState } from '../types/game'
 
 interface Props {
@@ -6,8 +9,17 @@ interface Props {
   turn: number
 }
 
+const TONE_CLASS: Record<string, string> = {
+  jade: 'border-[var(--color-jade)]/50 text-[var(--color-jade-light)]',
+  gold: 'border-[var(--color-gold)]/50 text-[var(--color-gold)]',
+  cinnabar: 'border-[var(--color-cinnabar)]/50 text-[var(--color-cinnabar-glow)]',
+  mist: 'border-[var(--color-mist)]/30 text-[var(--color-mist)]',
+}
+
 export function StatusPanel({ player, turn }: Props) {
   const remaining = player.lifespan - player.age
+  const routes = getRouteTags(player)
+  const warnings = getWarnings(player)
 
   return (
     <header className="border-b border-[var(--color-jade)]/40 pb-4 mb-6">
@@ -17,6 +29,33 @@ export function StatusPanel({ player, turn }: Props) {
         </h2>
         <span className="text-xs text-[var(--color-mist)]">第 {turn} 回合</span>
       </div>
+
+      <div className="flex flex-wrap gap-2 mb-3">
+        {routes.map((r) => (
+          <span
+            key={r.label}
+            className={`text-xs px-2 py-0.5 rounded-sm border ${TONE_CLASS[r.tone]}`}
+          >
+            {r.label}
+          </span>
+        ))}
+      </div>
+
+      {warnings.length > 0 && (
+        <div className="flex flex-wrap gap-2 mb-3">
+          {warnings.map((w) => (
+            <span key={w} className="text-xs text-[var(--color-cinnabar)] animate-pulse-glow px-2">
+              ⚠ {w}
+            </span>
+          ))}
+        </div>
+      )}
+
+      {player.nextEventHint && (
+        <p className="text-xs text-[var(--color-gold-dim)] mb-3 italic">
+          天机示警：{player.nextEventHint}
+        </p>
+      )}
 
       <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-[var(--color-parchment-dim)] mb-3">
         <span>{getRealmName(player.realm)}</span>
@@ -52,9 +91,11 @@ export function StatusPanel({ player, turn }: Props) {
         <MiniStat label="灵石" value={player.spiritStones} />
       </div>
 
+      <CultivationSystemsPanel player={player} />
+
       {player.artifacts.length > 0 && (
         <p className="mt-2 text-xs text-[var(--color-mist)]">
-          法宝：{player.artifacts.join('、')}
+          法宝：{player.artifacts.map(formatArtifactName).join('、')}
         </p>
       )}
     </header>

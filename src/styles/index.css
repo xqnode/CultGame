@@ -25,12 +25,48 @@ body,
   min-height: 100vh;
 }
 
+html {
+  color-scheme: dark;
+}
+
 body {
   margin: 0;
   font-family: var(--font-body);
   background: var(--color-ink);
   color: var(--color-parchment);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+input,
+select,
+textarea,
+button {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+input::placeholder {
+  color: var(--color-mist);
+  opacity: 1;
+}
+
+select {
+  color-scheme: dark;
+  background-color: #141a17;
+}
+
+select option {
+  background-color: #141a17;
+  color: var(--color-parchment);
+}
+
+input[type="checkbox"] {
+  accent-color: var(--color-jade-light);
+  width: 1rem;
+  height: 1rem;
+  cursor: pointer;
 }
 
 body::before {
@@ -79,9 +115,27 @@ body::before {
   animation: pulse-glow 3s ease-in-out infinite;
 }
 
+.log-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(74, 138, 114, 0.45) transparent;
+}
+
+.log-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+
+.log-scroll::-webkit-scrollbar-thumb {
+  background: rgba(74, 138, 114, 0.45);
+  border-radius: 2px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-fade-up,
   .animate-pulse-glow {
     animation: none;
+  }
+
+  .log-scroll {
+    scroll-behavior: auto;
   }
 }

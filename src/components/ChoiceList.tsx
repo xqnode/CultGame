@@ -34,6 +34,9 @@ export function ChoiceList({ choices, player, onChoose }: Props) {
             `}
           >
             <span className="block leading-relaxed">{choice.text}</span>
+            {choice.hint && canChoose && (
+              <span className="block text-xs mt-1 text-[var(--color-gold-dim)]/80">{choice.hint}</span>
+            )}
             {!canChoose && failed.length > 0 && (
               <span className="block text-xs mt-1 text-[var(--color-cinnabar)]/70">
                 需要：{failed.join('、')}

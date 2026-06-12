@@ -1,16 +1,21 @@
 import type { GameSession } from '../types/game'
+import { AbandonButton } from './AbandonButton'
 
 interface Props {
   session: GameSession
   onConfirm: () => void
+  onAbandon: () => void
 }
 
-export function RootRevealScreen({ session, onConfirm }: Props) {
+export function RootRevealScreen({ session, onConfirm, onAbandon }: Props) {
   const root = session.revealedRoot!
   const { player } = session
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-6 py-12 animate-fade-up">
+    <div className="min-h-screen flex flex-col items-center justify-center px-6 py-12 animate-fade-up relative">
+      <div className="absolute top-4 right-4">
+        <AbandonButton onAbandon={onAbandon} />
+      </div>
       <p className="text-[var(--color-gold-dim)] text-sm tracking-[0.3em] mb-2">测灵根</p>
       <h2
         className="text-4xl text-[var(--color-gold)] mb-8"

@@ -41,8 +41,8 @@ export const ENDINGS: Ending[] = [
     priority: 80,
     conditions: [
       { type: 'stat', key: 'comprehension', min: 60 },
-      { type: 'flag', key: 'mastered_alchemy', value: true },
-      { type: 'realm', min: 'foundation' },
+      { type: 'flag', key: 'golden_pill_refined', value: true },
+      { type: 'realm', min: 'golden_core' },
     ],
   },
   {
@@ -52,9 +52,24 @@ export const ENDINGS: Ending[] = [
       '你忠心宗门，历经磨难，最终成为宗门长老，守护一方山门。虽未证大道，却得万人敬仰，善终宗门。',
     priority: 75,
     conditions: [
-      { type: 'realm', min: 'foundation' },
+      { type: 'realm', min: 'golden_core' },
       { type: 'flag', key: 'loyal_to_sect', value: true },
       { type: 'flag', key: 'became_elder', value: true },
+    ],
+  },
+  {
+    id: 'immortal_lovers',
+    title: '神仙眷侣',
+    description:
+      '你与道侣双修圆满，情丝与道心相融。破境之时，你们携手飞升，成为修真界千古传颂的神仙眷侣，比翼双飞，同享长生。',
+    priority: 82,
+    conditions: [
+      { type: 'flag', key: 'has_companion', value: true },
+      { type: 'flag', key: 'dual_cultivation_mastered', value: true },
+      { type: 'flag', key: 'survived_together', value: true },
+      { type: 'flag', key: 'chose_lovers_ascension', value: true },
+      { type: 'realm', min: 'golden_core' },
+      { type: 'stat', key: 'demonHeart', max: 40 },
     ],
   },
   {
@@ -77,11 +92,52 @@ export const ENDINGS: Ending[] = [
     conditions: [{ type: 'flag', key: 'gave_up_cultivation', value: true }],
   },
   {
+    id: 'demon_overlord',
+    title: '魔尊称霸',
+    description:
+      '你击败正道联盟，魔威盖世，统领荒域。虽未飞升，却成一代魔尊，令修真界闻风丧胆。',
+    priority: 78,
+    conditions: [
+      { type: 'flag', key: 'demon_overlord', value: true },
+      { type: 'realm', min: 'golden_core' },
+    ],
+  },
+  {
+    id: 'merchant_king',
+    title: '凡俗首富',
+    description:
+      '你以灵石为道，坊市为家，富甲修真界。虽无大道修为，却享尽人间荣华，善终富贵。',
+    priority: 55,
+    conditions: [
+      { type: 'resource', key: 'spiritStones', min: 500 },
+      { type: 'flag', key: 'gave_up_cultivation', value: true },
+    ],
+  },
+  {
+    id: 'reincarnation',
+    title: '轮回重修',
+    description:
+      '寿尽之时，你保留一丝元神投入轮回。来世，你将以新的灵根再踏仙途——这一世的故事，成为传说。',
+    priority: 45,
+    conditions: [
+      { type: 'flag', key: 'past_life_chosen', value: true },
+      { type: 'realm', min: 'foundation' },
+    ],
+  },
+  {
     id: 'natural_death',
     title: '寿尽坐化',
     description:
       '寿元耗尽，你盘坐洞府，元神渐散。未能证道长生，却也在修行路上走过一遭，魂归天地，道消人亡。',
     priority: 10,
     conditions: [{ type: 'lifespan_remaining', max: 0 }],
+  },
+  {
+    id: 'path_exhausted',
+    title: '道途搁浅',
+    description:
+      '修行路上再无新机缘可寻，你止步不前，道心渐惰，最终泯然众人。仙途于此搁浅，徒留一声叹息。',
+    priority: 5,
+    conditions: [{ type: 'flag', key: '__path_exhausted__', value: true }],
   },
 ]
