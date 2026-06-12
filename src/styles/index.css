@@ -1,0 +1,87 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Ma Shan Zheng", cursive;
+  --font-body: "Noto Serif SC", serif;
+  --color-ink: #0c0f0d;
+  --color-parchment: #e8dcc8;
+  --color-parchment-dim: #c9b99a;
+  --color-cinnabar: #b83a2a;
+  --color-cinnabar-glow: #d45a3a;
+  --color-jade: #2d5a4a;
+  --color-jade-light: #4a8a72;
+  --color-gold: #c9a227;
+  --color-gold-dim: #8a7020;
+  --color-mist: #6a7a72;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100vh;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  background: var(--color-ink);
+  color: var(--color-parchment);
+  -webkit-font-smoothing: antialiased;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 20% 0%, rgba(45, 90, 74, 0.25) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 100%, rgba(184, 58, 42, 0.12) 0%, transparent 45%),
+    linear-gradient(180deg, #0a0d0c 0%, #121816 50%, #0c0f0d 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+#root {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(201, 162, 39, 0);
+  }
+  50% {
+    box-shadow: 0 0 20px 2px rgba(201, 162, 39, 0.15);
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.5s ease-out both;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-up,
+  .animate-pulse-glow {
+    animation: none;
+  }
+}
